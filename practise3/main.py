@@ -9,8 +9,10 @@ if __name__ == "__main__":
     assembler.test()
     program = dict()
 
-
-
-    assembler.assemble_program(program, "byte_code")
+    print("Введите путь к файлу с исходным кодом\n>> ", end='')
+    read_from = input()
+    print("Введите путь для файла с машинным кодом\n>> ", end='')
+    write_to = input()
+    assembler.assemble_program(read_from, write_to, testing=True)
 
 
