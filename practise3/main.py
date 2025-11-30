@@ -13,6 +13,6 @@ if __name__ == "__main__":
     a = assembler.assemble_program("test.csv", "byte_code", True)
 
     interpreter = Interpreter()
-    interpreter.sqrt_test()
+    interpreter.execute("byte_code")
 
 
