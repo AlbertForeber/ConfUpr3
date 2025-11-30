@@ -1,5 +1,3 @@
-from termcolor import cprint
-import os
 from assembler import Assembler
 from practise3.interpreter import Interpreter
 

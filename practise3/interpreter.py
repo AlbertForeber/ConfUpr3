@@ -101,7 +101,6 @@ class Interpreter:
                     self.__sqrt(address_1, address_2, bias)
                 case _:
                     raise ValueError("Неизвестная команда")
-        print(self.registers)
         self.__dump_memory()
 
 
