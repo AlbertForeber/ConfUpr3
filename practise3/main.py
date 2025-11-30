@@ -12,6 +12,6 @@ if __name__ == "__main__":
     read_from = input()
     print("Введите путь для файла с машинным кодом\n>> ", end='')
     write_to = input()
-    assembler.assemble_program(read_from, write_to)
+    assembler.assemble_program(read_from, write_to, testing=True)
 
 
