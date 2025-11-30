@@ -2,8 +2,8 @@ from typing import List
 
 class Interpreter:
     def __init__(self):
-        self.memory: List[int] = [0] * 1000
-        self.registers: List[int] = [0] * 1000
+        self.memory: List[int] = [0] * 200
+        self.registers: List[int] = [0] * 200
 
     @staticmethod
     def __mask(n):
@@ -19,6 +19,11 @@ class Interpreter:
     def __write(self, address_1: int, address_2: int):
         self.memory[self.registers[address_1]] = self.registers[address_2]
         self.registers[address_2] = 0
+
+    def __dump_memory(self, file_name: str = "memory_dump.csv"):
+        with open(file_name, "w") as f:
+            for i in self.memory:
+                f.write(f"{i};")
 
     def test(self):
         # Новые индексы массива
@@ -46,6 +51,7 @@ class Interpreter:
 
         # После копирования
         print(self.memory[:10])
+        self.__dump_memory()
 
 
 
@@ -75,6 +81,7 @@ class Interpreter:
                     pass
                 case _:
                     raise ValueError("Неизвестная команда")
+        self.__dump_memory()
 
 
 
