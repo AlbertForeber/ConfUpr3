@@ -1,6 +1,36 @@
 from typing import Dict, List
+import argparse
 
 class Assembler:
+    def __init__(self):
+        self.args = vars(self.__parse_args())
+
+    @staticmethod
+    def __parse_args():
+        parser = argparse.ArgumentParser(description="Assembler argument parser")
+        parser.add_argument(
+            "--read_from",
+            type=str,
+            required=True,
+            help="Source code"
+        )
+
+        parser.add_argument(
+            "--write_to",
+            type=str,
+            required=True,
+            help="Path to output bytecode file"
+        )
+
+        parser.add_argument(
+            "--testing",
+            action="store_true",
+            required=False,
+            help="Activate test mode"
+        )
+        return parser.parse_args()
+
+
     @staticmethod
     def __translator(file_name: str) -> Dict[str, List[int]]:
         program: Dict[str, List[int]] = dict()
@@ -86,7 +116,15 @@ class Assembler:
                 f.write(machine_code)
 
         if testing:
-            print([hex(i) for i in machine_code])
+            print("Вывод ассемблера:")
+            print(">>", [hex(i) for i in machine_code])
+            print()
+            print("Размер файла >>", len(machine_code), "байт")
+
 
         return machine_code
 
+
+if __name__ == "__main__":
+    assembler = Assembler()
+    assembler.assemble_program(**assembler.args)
