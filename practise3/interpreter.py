@@ -1,9 +1,47 @@
 from typing import List
+import argparse
 
 class Interpreter:
     def __init__(self):
         self.memory: List[int] = [0] * 200
         self.registers: List[int] = [0] * 200
+
+        self.args = vars(self.__parse_args())
+
+
+    @staticmethod
+    def __parse_args():
+        parser = argparse.ArgumentParser(description="Assembler argument parser")
+        parser.add_argument(
+            "--read_from",
+            type=str,
+            required=True,
+            help="Source code"
+        )
+
+        parser.add_argument(
+            "--write_to",
+            type=str,
+            required=True,
+            help="Path to output bytecode file"
+        )
+
+        parser.add_argument(
+            "--from_",
+            type=int,
+            required=True,
+            help="Save from"
+        )
+
+        parser.add_argument(
+            "--to_",
+            type=int,
+            required=True,
+            help="Save to"
+        )
+
+        return parser.parse_args()
+
 
     @staticmethod
     def __mask(n):
@@ -17,17 +55,37 @@ class Interpreter:
         self.memory[address_1 + bias] = 0
 
     def __write(self, address_1: int, address_2: int):
-        self.memory[self.registers[address_1]] = self.registers[address_2]
-        self.registers[address_2] = 0
-
+        self.memory[self.registers[address_2]] = self.registers[address_1]
+        self.registers[address_1] = 0
+        
     def __sqrt(self, address_1: int, address_2: int, bias: int):
         self.registers[address_2] = self.memory[address_1 + bias] ** 0.5
         self.memory[address_1 + bias] = 0
 
-    def __dump_memory(self, file_name: str = "memory_dump.csv"):
+    def __dump_memory(self, file_name: str, from_: int, to_: int):
         with open(file_name, "w") as f:
-            for i in self.memory:
-                f.write(f"{i};")
+            for i, item in enumerate(self.memory):
+                if i > to_: break
+
+                if from_ <= i:
+                    f.write(f"{item};")
+
+
+
+    def sqrt_test(self):
+        # Тестовые значения
+        self.memory[0] = 49
+        self.memory[1] = 64
+        self.memory[2] = 81
+
+        print(self.memory[:10])
+
+        self.__sqrt(0, 0, 0)
+        self.__sqrt(1, 1, 0)
+        self.__sqrt(2, 2, 0)
+
+        print(self.registers[:10])
+
 
     def test(self):
         # Новые индексы массива
@@ -57,23 +115,10 @@ class Interpreter:
         print(self.memory[:10])
         self.__dump_memory()
 
-    def sqrt_test(self):
-        # Тестовые значения
-        self.memory[0] = 49
-        self.memory[1] = 64
-        self.memory[2] = 81
-
-        print(self.memory[:10])
-
-        self.__sqrt(0, 0, 0)
-        self.__sqrt(1, 1, 0)
-        self.__sqrt(2, 2, 0)
-
-        print(self.registers[:10])
 
 
-    def execute(self, file_name: str):
-        f = open(file_name, "rb")
+    def execute(self, read_from: str, write_to: str, from_: int, to_: int):
+        f = open(read_from, "rb")
         byte_code = f.read().__bytes__()
 
         for i in range(0, len(byte_code), 5):
@@ -101,7 +146,9 @@ class Interpreter:
                     self.__sqrt(address_1, address_2, bias)
                 case _:
                     raise ValueError("Неизвестная команда")
-        self.__dump_memory()
+        self.__dump_memory(write_to, from_, to_)
 
 
-
+if __name__ == "__main__":
+    inter = Interpreter()
+    inter.execute(**inter.args)
