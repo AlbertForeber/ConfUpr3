@@ -1,16 +1,45 @@
-from typing import Dict, List
+from typing import Tuple, List
+import argparse
 
 class Assembler:
+    def __init__(self):
+        self.args = vars(self.__parse_args())
+
     @staticmethod
-    def __translator(file_name: str) -> Dict[str, List[int]]:
-        program: Dict[str, List[int]] = dict()
+    def __parse_args():
+        parser = argparse.ArgumentParser(description="Assembler argument parser")
+        parser.add_argument(
+            "--read_from",
+            type=str,
+            required=True,
+            help="Source code"
+        )
+
+        parser.add_argument(
+            "--write_to",
+            type=str,
+            required=True,
+            help="Path to output bytecode file"
+        )
+
+        parser.add_argument(
+            "--testing",
+            action="store_true",
+            required=False,
+            help="Activate test mode"
+        )
+        return parser.parse_args()
+
+    @staticmethod
+    def __translator(file_name: str) -> List[Tuple[str, List[int]]]:
+        program: List[Tuple[str, List[int]]] = []
         for readline in open(file_name):
             line = readline.strip()
 
             if line.endswith(";"): line = line[:-1]
 
             line = line.split(";")
-            program[line[0]] = [int(i) for i in line[1:]]
+            program.append((line[0], [int(i) for i in line[1:]]))
         return program
 
     @staticmethod
@@ -59,7 +88,9 @@ class Assembler:
         program = self.__translator(read_from)
 
 
-        for operation, args in program.items():
+        for command in program:
+            operation = command[0]
+            args = command[1]
             match operation:
                 case "LOAD":
                     if len(args) != 2:
@@ -89,3 +120,7 @@ class Assembler:
 
         return machine_code
 
+
+if __name__ == "__main__":
+    assembler = Assembler()
+    assembler.assemble_program(**assembler.args)
